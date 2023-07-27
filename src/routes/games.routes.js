@@ -3,7 +3,7 @@ import { createGame, getGames } from "../controllers/games.controllers.js";
 
 const gamesRouter = Router();
 
-gamesRouter.use("/games", createGame);
-gamesRouter.use("/games", getGames);
+gamesRouter.post("/games", createGame);
+gamesRouter.get("/games", getGames);
 
 export default gamesRouter;
