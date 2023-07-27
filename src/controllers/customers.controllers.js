@@ -1,5 +1,6 @@
 import { db } from "../database/database.connection.js";
 import { customersSchema } from "../schemas/customers.schema.js";
+import dayjs from "dayjs";
 
 export async function newCustomer(req, res){
     const {name, phone, cpf, birthday} = req.body;
@@ -22,6 +23,9 @@ export async function newCustomer(req, res){
 export async function getCustomers(req, res){
     try {
         const customers = await db.query(`SELECT * FROM customers;`);
+        customers.rows.forEach(customer => {
+            customer.birthday = dayjs(customer.birthday).format('YYYY-MM-DD');
+        });
         res.send(customers.rows);
     } catch (error) {
         res.status(500).send(error.message);
@@ -34,6 +38,8 @@ export async function getCustomerById(req, res){
     try {
         const customer = await db.query(`SELECT * FROM customers WHERE id = $1;`, [id]);
         if(customer.rows.length === 0) return res.status(404).send("Cliente não encontrado.");
+
+        customer.rows[0].birthday = dayjs(customer.rows[0].birthday).format('YYYY-MM-DD');
 
         res.send(customer.rows[0]);
     } catch (error) {
