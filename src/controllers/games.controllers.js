@@ -13,7 +13,7 @@ export async function createGame(req, res) {
         const game = await db.query(
             "INSERT INTO games (name, image, stock_total, price_per_day) VALUES ($1, $2, $3, $4);", [name, image, stockTotal, pricePerDay]
         )
-        res.send(game.rows[0]);
+        res.sendStatus(201);
     } catch (err) {
         res.status(500).send(err.message);
     }
