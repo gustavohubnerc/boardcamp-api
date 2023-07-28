@@ -51,3 +51,52 @@ export async function deleteRental(req, res) {
         res.status(500).send(error.message);
     }
 }
+
+export async function getRentals(req, res) {
+    try {
+        const rentals = await db.query(`
+            SELECT 
+                r.id,
+                r."customerId",
+                r."gameId",
+                r."rentDate",
+                r."daysRented",
+                r."returnDate",
+                r."originalPrice",
+                r."delayFee",
+                c.id AS "customer.id",
+                c.name AS "customer.name",
+                g.id AS "game.id",
+                g.name AS "game.name"
+            FROM 
+                rentals r
+            JOIN
+                customers c ON r."customerId" = c.id
+            JOIN
+                games g ON r."gameId" = g.id;
+        `);
+
+        const formattedRentals = rentals.rows.map((rental) => ({
+            id: rental.id,
+            customerId: rental.customerId,
+            gameId: rental.gameId,
+            rentDate: rental.rentDate,
+            daysRented: rental.daysRented,
+            returnDate: rental.returnDate,
+            originalPrice: rental.originalPrice,
+            delayFee: rental.delayFee,
+            customer: {
+                id: rental['customer.id'],
+                name: rental['customer.name']
+            },
+            game: {
+                id: rental['game.id'],
+                name: rental['game.name']
+            }
+        }));
+
+        res.send(formattedRentals);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+}
