@@ -16,9 +16,13 @@ export async function newRental(req, res){
         const game = await db.query(`SELECT * FROM games WHERE id = $1;`, [gameId]);
         if(game.rows.length === 0) return res.status(400).send("Jogo não encontrado.");
 
+        const stockTotal = game.rows[0].stockTotal;
         const pricePerDay = game.rows[0].pricePerDay;
         const originalPrice = daysRented * pricePerDay;
 
+        const rentals = await db.query(`SELECT * FROM rentals WHERE "gameId" = $1;`, [gameId]);
+        if(rentals.rows.length > stockTotal) return res.status(400).send("Jogo já alugado.");
+        
         req.body.returnDate = null;
         req.body.delayFee = null;
         req.body.rentDate = dayjs().format('YYYY-MM-DD');
