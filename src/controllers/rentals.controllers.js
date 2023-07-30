@@ -21,7 +21,7 @@ export async function newRental(req, res){
         const originalPrice = daysRented * pricePerDay;
 
         const rentals = await db.query(`SELECT * FROM rentals WHERE "gameId" = $1;`, [gameId]);
-        if(rentals.rows.length > stockTotal) return res.status(400).send("Jogo já alugado.");
+        if(rentals.rows.length >= stockTotal) return res.status(400).send("Jogo já alugado.");
         
         req.body.returnDate = null;
         req.body.delayFee = null;
