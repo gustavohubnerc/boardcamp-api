@@ -1,10 +1,7 @@
 import { db } from "../database/database.connection.js";
-import { gamesSchema } from "../schemas/games.schema.js";
 
 export async function createGame(req, res) {
     const { name, image, stockTotal, pricePerDay } = req.body;
-    const { error } = gamesSchema.validate({ name, stockTotal, pricePerDay });
-    if (error) return res.status(400).send(error.details[0].message);
     
     try {
         const existingGame = await db.query(`SELECT * FROM games WHERE name = $1;`, [name]);
