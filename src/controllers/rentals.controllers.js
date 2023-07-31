@@ -1,8 +1,11 @@
 import { db } from "../database/database.connection.js";
+import { rentalsSchema } from "../schemas/rentals.schema.js";
 import dayjs from "dayjs";
 
 export async function newRental(req, res){
     const {customerId, gameId, daysRented} = req.body;
+    const {error} = rentalsSchema.validate({customerId, gameId, daysRented});
+    if(error) return res.status(400).send(error.details[0].message);
 
     try {
         if(!daysRented || daysRented <= 0) return res.status(400).send("Não é possível alugar por menos de 1 dia!");
